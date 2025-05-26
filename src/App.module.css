@@ -1,0 +1,221 @@
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f0f4f8;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.trackerCard {
+  background-color: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px; /* Фиксированная максимальная ширина карточки */
+  box-sizing: border-box;
+}
+
+/* Остальные стили остаются без изменений */
+.title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.inputGroup {
+  display: flex;
+  margin-bottom: 1.5rem;
+}
+
+.inputField {
+  flex-grow: 1;
+  padding: 0.85rem 1rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 0.5rem 0 0 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.inputField:focus {
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+}
+
+.createButton {
+  background-color: #4a90e2;
+  color: white;
+  padding: 0.85rem 1.25rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.createButton:hover {
+  background-color: #357bd8;
+  transform: translateY(-1px);
+}
+
+.createButton:active {
+  transform: translateY(0);
+}
+
+.noTasksMessage {
+  color: #7f8c8d;
+  text-align: center;
+  padding: 1rem;
+  background-color: #ecf0f1;
+  border-radius: 0.5rem;
+  font-style: italic;
+}
+
+.taskList {
+  list-style: none;
+  padding: 0;
+  margin-top: 1.5rem;
+}
+
+.taskItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  background-color: #fdfdfd;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  margin-bottom: 1rem;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.taskItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.taskName {
+  flex-grow: 1;
+  margin-bottom: 0.75rem;
+  color: #34495e;
+  font-weight: 600;
+  font-size: 1.1rem;
+  word-break: break-word;
+}
+
+.taskCompleted .taskName {
+  text-decoration: line-through;
+  color: #95a5a6;
+}
+
+.taskTime {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 1.4rem;
+  color: #2c3e50;
+  min-width: 7rem;
+  text-align: left;
+  background-color: #ecf0f1;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.3rem;
+}
+
+.taskCompleted .taskTime {
+  color: #95a5a6;
+  background-color: #e0e0e0;
+}
+
+.taskControlsGroup {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.controlButton {
+  padding: 0.6rem;
+  border-radius: 50%;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.controlButton:hover {
+  transform: translateY(-1px);
+}
+
+.controlButton:active {
+  transform: translateY(0);
+}
+
+.startButton {
+  background-color: #27ae60;
+}
+.startButton:hover {
+  background-color: #229a55;
+}
+
+.pauseButton {
+  background-color: #f39c12;
+}
+.pauseButton:hover {
+  background-color: #e08e0b;
+}
+
+.completeButton {
+  background-color: #3498db;
+}
+.completeButton:hover {
+  background-color: #2980b9;
+}
+
+.deleteButton {
+  background-color: #e74c3c;
+}
+.deleteButton:hover {
+  background-color: #d62c1a;
+}
+
+@media (min-width: 640px) {
+  .taskItem {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .taskName {
+    margin-bottom: 0;
+    margin-right: 1.5rem;
+  }
+  .taskTime {
+    text-align: right;
+  }
+  .taskControlsGroup {
+    width: auto;
+    margin-top: 0;
+    justify-content: flex-end;
+  }
+}
