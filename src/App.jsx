@@ -1,5 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+// app.jsx
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import axios from 'axios';
 import styles from './App.module.css';
+
+const API_BASE_URL = 'http://localhost:8000/tracker/api';
 
 function App() {
     const [tasks, setTasks] = useState([]);
@@ -10,73 +14,112 @@ function App() {
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
         const seconds = totalSeconds % 60;
-
         return [hours, minutes, seconds]
             .map(unit => String(unit).padStart(2, '0'))
             .join(':');
     };
 
-    const addTask = () => {
+    const fetchTasks = useCallback(async () => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/tasks/`);
+            const updatedTasks = response.data.map(task => {
+                if (!task.isRunning && intervalRefs.current[task.id]) {
+                    clearInterval(intervalRefs.current[task.id]);
+                    delete intervalRefs.current[task.id];
+                }
+                return task;
+            });
+            setTasks(updatedTasks);
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    }, []);
+
+    const addTask = async () => {
         if (newTaskName.trim() === '') return;
 
-        const newTask = {
-            id: Date.now(),
-            name: newTaskName,
-            timeElapsed: 0,
-            isRunning: false,
-            isCompleted: false,
-        };
-        setTasks((prevTasks) => [...prevTasks, newTask]);
-        setNewTaskName('');
-    };
-
-    const toggleTaskTimer = (id) => {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) => {
-                if (task.id === id && !task.isCompleted) {
-                    const newIsRunning = !task.isRunning;
-
-                    if (newIsRunning) {
-                        intervalRefs.current[id] = setInterval(() => {
-                            setTasks((currentTasks) =>
-                                currentTasks.map((t) =>
-                                    t.id === id ? { ...t, timeElapsed: t.timeElapsed + 1 } : t
-                                )
-                            );
-                        }, 1000);
-                    } else {
-                        clearInterval(intervalRefs.current[id]);
-                        delete intervalRefs.current[id];
-                    }
-                    return { ...task, isRunning: newIsRunning };
-                }
-                return task;
-            })
-        );
-    };
-
-    const completeTask = (id) => {
-        setTasks((prevTasks) =>
-            prevTasks.map((task) => {
-                if (task.id === id && !task.isCompleted) {
-                    if (task.isRunning) {
-                        clearInterval(intervalRefs.current[id]);
-                        delete intervalRefs.current[id];
-                    }
-                    return { ...task, isRunning: false, isCompleted: true };
-                }
-                return task;
-            })
-        );
-    };
-
-    const deleteTask = (id) => {
-        if (intervalRefs.current[id]) {
-            clearInterval(intervalRefs.current[id]);
-            delete intervalRefs.current[id];
+        try {
+            const response = await axios.post(`${API_BASE_URL}/tasks/`, { name: newTaskName });
+            setTasks((prevTasks) => [...prevTasks, response.data]);
+            setNewTaskName('');
+        } catch (error) {
+            console.error('Error adding task:', error);
         }
-        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     };
+
+    const toggleTaskTimer = async (id) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/tasks/${id}/toggle/`);
+            setTasks((prevTasks) =>
+                prevTasks.map((task) => {
+                    if (task.id === id) {
+                        return response.data;
+                    }
+                    if (task.id !== id && task.isRunning && intervalRefs.current[task.id]) {
+                        clearInterval(intervalRefs.current[task.id]);
+                        delete intervalRefs.current[task.id];
+                        return { ...task, isRunning: false };
+                    }
+                    return task;
+                })
+            );
+
+            const updatedTask = response.data;
+            if (updatedTask.isRunning) {
+                if (!intervalRefs.current[id]) {
+                    intervalRefs.current[id] = setInterval(() => {
+                        setTasks((currentTasks) =>
+                            currentTasks.map((t) =>
+                                t.id === id ? { ...t, timeElapsed: t.timeElapsed + 1 } : t
+                            )
+                        );
+                    }, 1000);
+                }
+            } else {
+                if (intervalRefs.current[id]) {
+                    clearInterval(intervalRefs.current[id]);
+                    delete intervalRefs.current[id];
+                }
+            }
+
+        } catch (error) {
+            console.error('Error toggling timer:', error);
+        }
+    };
+
+    const completeTask = async (id) => {
+        try {
+            const response = await axios.post(`${API_BASE_URL}/tasks/${id}/complete/`);
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === id ? response.data : task
+                )
+            );
+            if (intervalRefs.current[id]) {
+                clearInterval(intervalRefs.current[id]);
+                delete intervalRefs.current[id];
+            }
+        } catch (error) {
+            console.error('Error completing task:', error);
+        }
+    };
+
+    const deleteTask = async (id) => {
+        try {
+            await axios.delete(`${API_BASE_URL}/tasks/${id}/delete/`);
+            setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+            if (intervalRefs.current[id]) {
+                clearInterval(intervalRefs.current[id]);
+                delete intervalRefs.current[id];
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks();
+    }, [fetchTasks]);
 
     useEffect(() => {
         return () => {
@@ -85,6 +128,26 @@ function App() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        tasks.forEach(task => {
+            if (task.isRunning && !intervalRefs.current[task.id]) {
+                intervalRefs.current[task.id] = setInterval(() => {
+                    setTasks(currentTasks =>
+                        currentTasks.map(t =>
+                            t.id === task.id ? { ...t, timeElapsed: t.timeElapsed + 1 } : t
+                        )
+                    );
+                }, 1000);
+            } else if (!task.isRunning && intervalRefs.current[task.id]) {
+                clearInterval(intervalRefs.current[task.id]);
+                delete intervalRefs.current[task.id];
+            }
+        });
+
+        return () => {};
+    }, [tasks]);
+
 
     return (
         <div className={styles.container}>
@@ -125,9 +188,9 @@ function App() {
                                     {task.name}
                                 </div>
                                 <div className={styles.taskControlsGroup}>
-                  <span className={styles.taskTime}>
-                    {formatTime(task.timeElapsed)}
-                  </span>
+                                    <span className={styles.taskTime}>
+                                        {formatTime(task.timeElapsed)}
+                                    </span>
                                     {!task.isCompleted && (
                                         <>
                                             <button
