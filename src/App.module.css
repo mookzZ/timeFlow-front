@@ -200,6 +200,114 @@ html, body, #root {
   background-color: #d62c1a;
 }
 
+/* App.module.css */
+
+/* ... (существующие стили) ... */
+
+.authCard {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.authCard .title {
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.authCard .inputField {
+  width: calc(100% - 20px);
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.authButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff; /* Синяя кнопка */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.authButton:hover {
+  background-color: #0056b3;
+}
+
+.authMessage {
+  color: #dc3545; /* Красный для ошибок */
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.authMessage.success {
+  color: #28a745; /* Зеленый для успеха */
+}
+
+.toggleAuth {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #555;
+}
+
+.toggleLink {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.toggleLink:hover {
+  color: #0056b3;
+}
+
+.headerControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  position: relative; /* Для позиционирования logoutButton */
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Пространство между именем пользователя и кнопкой */
+}
+
+.usernameDisplay {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #555;
+}
+
+/* Обновите стили для logoutButton, если он был абсолютным */
+.logoutButton {
+  background-color: #dc3545; /* Красная кнопка для выхода */
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  /* Уберите position: absolute; top: 20px; right: 20px; если они были */
+}
+
+.logoutButton:hover {
+  background-color: #c82333;
+}
+
 @media (min-width: 640px) {
   .taskItem {
     flex-direction: row;
